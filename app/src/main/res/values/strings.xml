@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Мой навигатор МГТУ</string>
+    <string name="button_text">Create route</string>
+</resources>
