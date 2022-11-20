@@ -53,6 +53,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
     private float oldDist = 0, oldDegree = 0;
     private boolean isScaleAndRotateTogether = false;
     boolean isClickTwoTouch = false;
+    boolean isMovedTouch = false;
 
     public MapView(Context context) {
         this(context, null);
@@ -195,6 +196,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
                 lastMove.set(event.getX(), event.getY());
                 currentTouchState = MapView.TOUCH_STATE_SCROLL;
                 isClickTwoTouch = gesture.onTouchEvent(event);
+                isMovedTouch= false;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (event.getPointerCount() == 2) {
@@ -211,7 +213,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
                 break;
             case MotionEvent.ACTION_UP:
                 gesture.onTouchEvent(event);
-                if (withFloorPlan(event.getX(), event.getY()) && !isClickTwoTouch) {
+                if (withFloorPlan(event.getX(), event.getY()) && !isClickTwoTouch&& !isMovedTouch) {
 //                    Log.i(TAG, event.getX() + " " + event.getY());
                     // layers on touch
                     for (MapBaseLayer layer : layers) {
@@ -224,8 +226,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback {
                 currentTouchState = MapView.TOUCH_STATE_NO;
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (Math.abs(event.getX() - lastMove.x) > 0
-                        && Math.abs(event.getY() - lastMove.y) > 0) {
+                if (Math.abs(event.getX() - lastMove.x) > 0.1
+                        && Math.abs(event.getY() - lastMove.y) > 0.1) {
+                    isMovedTouch = true;
                     switch (currentTouchState) {
                         case MapView.TOUCH_STATE_SCROLL:
                             currentMatrix.set(saveMatrix);
